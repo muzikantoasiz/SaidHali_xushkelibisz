@@ -609,19 +609,13 @@ function startIntro(){
   started = true;
   video.play().catch(()=>{ showMain(); });
 }
-// tap, touch, or any scroll starts the intro
+// faqat ekranga bosganda yoki scroll qilganda boshlanadi
 intro.addEventListener("click", startIntro);
 intro.addEventListener("touchstart", startIntro, { passive:true });
 window.addEventListener("wheel",       startIntro, { passive:true, once:true });
 window.addEventListener("touchmove",   startIntro, { passive:true, once:true });
 
 video.addEventListener("ended", showMain);
-
-// Agar 3 soniya ichida video boshlanmasa — main ga o'tish
-setTimeout(() => { if(!started){ showMain(); } }, 500);
-video.addEventListener("canplay", () => {
-  video.play().then(()=>{ started=true; }).catch(()=>{ showMain(); });
-});
 
 const scrollCta = document.getElementById("scrollCta");
 if(scrollCta){
