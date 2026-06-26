@@ -596,10 +596,18 @@ const video = document.getElementById("introVideo");
 const main  = document.getElementById("main");
 let started = false;
 
+function showMain(){
+  intro.style.display = "none";
+  main.style.display = "block";
+  document.body.classList.remove("lock-scroll");
+  window.scrollTo(0,0);
+  document.fonts.ready.then(() => { sizeFan(); });
+}
+
 function startIntro(){
   if(started) return;
   started = true;
-  video.play().catch(()=>{ started=false; });
+  video.play().catch(()=>{ showMain(); });
 }
 // tap, touch, or any scroll starts the intro
 intro.addEventListener("click", startIntro);
@@ -607,12 +615,12 @@ intro.addEventListener("touchstart", startIntro, { passive:true });
 window.addEventListener("wheel",       startIntro, { passive:true, once:true });
 window.addEventListener("touchmove",   startIntro, { passive:true, once:true });
 
-video.addEventListener("ended", () => {
-  intro.style.display = "none";
-  main.style.display = "block";
-  document.body.classList.remove("lock-scroll");
-  window.scrollTo(0,0);
-  document.fonts.ready.then(() => { sizeFan(); });
+video.addEventListener("ended", showMain);
+
+// Agar 3 soniya ichida video boshlanmasa — main ga o'tish
+setTimeout(() => { if(!started){ showMain(); } }, 500);
+video.addEventListener("canplay", () => {
+  video.play().then(()=>{ started=true; }).catch(()=>{ showMain(); });
 });
 
 const scrollCta = document.getElementById("scrollCta");
@@ -714,7 +722,7 @@ function submitReg(){
     body: JSON.stringify({
       ism:      nameEl.value.trim(),
       familiya: surnameEl.value.trim(),
-      telefon:  phoneEl.value.trim()
+      telefon:  phoneEl.value.replace(/\D/g, '')
     })
   })
   .then(() => {
